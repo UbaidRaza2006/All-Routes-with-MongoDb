@@ -1,26 +1,59 @@
-const express = require('express');
-const app = express();
-const mongoose =require('mongoose')
-const userRoute = require('./Routes/User')
-const morgan = require('morgan')
+const mongoose = require('mongoose');
+const express = require("express");
+const dotenv = require("dotenv");
+const userSchema = require("./Model/user.js")
+const port = 3000
+const app = express()
+dotenv.config()
+const userRoutes = require('./Routes/User.js')
 
 
-mongoose.connect('mongodb+srv://ubaidrazabawany13:oDhZcUUCK1BWGd9p@cluster0.dr9sk08.mongodb.net/').then(console.log('MongoDB Connected')).catch((err) => console.log('There is an error in connecting MongoDB ',err))
+mongoose.connect(process.env.MONGOURL, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true
+}).then(() => {
 
+    console.log("MongoDB connected");
+}).catch((error) => {
+    console.error("MongoDB connection error:", error);
+})
 
+// Parse JSON request bodies
 app.use(express.json());
-app.use(morgan('/tiny'))
 
-app.get('/',(req,res)=>{
-    res.send(new Date())
+app.get('/', (req, res) => {
+    res.status(200).send({
+        status: 200,
+        msg: 'ABCD'
+    })
 })
 
-app.use('/user',userRoute)
+app.use('/user', userRoutes)
+// Connecting
 
 
-const port = 3000;
-app.listen(port,()=>{
-    console.log("App is running on port ", port);
-})
 
+
+
+
+// app.post("/user", async (req, res) => {
+//     const userBody = req.body;
+//     try {
+//         const newUser = new userSchema({ ...userBody });
+//         await newUser.save();
+//         res.status(200).send("User has been created!");
+//     } catch (error) {
+//         console.error("Error saving user:", error);
+//         res.status(500).send(error.message);
+//     }
+
+// });
+
+
+
+
+
+    app.listen(port, () => {
+        console.log('Server is running on port ' + port);
+    });
 
